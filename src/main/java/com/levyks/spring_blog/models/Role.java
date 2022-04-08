@@ -7,7 +7,6 @@ import javax.validation.constraints.NotBlank;
 
 import lombok.*;
 
-
 @Entity
 @Table(name = "roles")
 @Getter
