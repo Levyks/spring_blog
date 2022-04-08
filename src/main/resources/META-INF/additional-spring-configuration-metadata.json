@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "levyks.spring_blog.jwt.secret",
+      "type": "java.lang.String",
+      "description": "Description for levyks.spring_blog.jwt.secret."
+    },
+    {
+      "name": "levyks.spring_blog.jwt.expiration",
+      "type": "java.lang.String",
+      "description": "Description for levyks.spring_blog.jwt.expiration."
+    }
+  ] }
