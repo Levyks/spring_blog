@@ -54,9 +54,6 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponseDTO login(@Valid @RequestBody LoginRequestDTO loginDTO) {
 
-        logger.info("Attempting to login with username: " + loginDTO.getEmail());
-        logger.info("Attempting to login with password: " + loginDTO.getPassword());
-
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDTO.getEmail(), loginDTO.getPassword()
         ));
@@ -78,9 +75,6 @@ public class AuthController {
             if(userRepository.existsByEmail(registerDTO.getEmail())) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
             }
-
-            logger.info("Registering user: " + registerDTO.getEmail());
-            logger.info("Password: " + registerDTO.getPassword());
 
             User user = new User();
             user.setEmail(registerDTO.getEmail());
@@ -106,7 +100,6 @@ public class AuthController {
     @GetMapping("/whoami")
     @PreAuthorize("isAuthenticated()")
     public UserDTO whoami(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        logger.info("Getting user details for: " + userDetails.getUsername());
         return userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Something really wrong happened here lol"))
                 .toDTO();
