@@ -64,7 +64,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public PostDTO getPostById(@PathVariable Long id) {
+    public PostDTO getPost(@PathVariable Long id) {
         return postRepository.findById(id).map(PostDTO::fromPost)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
     }
@@ -114,7 +114,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}/comments")
-    public Page<CommentDTO> getCommentsByPostId(
+    public Page<CommentDTO> getCommentsByPost(
         @PathVariable Long id,
         Pageable pageable
     ) {

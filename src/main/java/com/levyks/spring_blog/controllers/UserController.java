@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/posts")
-    public Page<PostDTO> getUserPosts(@PathVariable Long id, Pageable pageable) {
+    public Page<PostDTO> getPostsByUser(@PathVariable Long id, Pageable pageable) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
@@ -47,7 +47,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/comments")
-    public Page<CommentDTO> getUserComments(@PathVariable Long id, Pageable pageable) {
+    public Page<CommentDTO> getCommentsByUser(@PathVariable Long id, Pageable pageable) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
