@@ -1,7 +1,13 @@
 # Basic Blog API
 ## Written in Java with Spring Boot
 
-Swagger documentation is available at `/swagger-ui/`
+API currently hosted in [Heroku](https://heroku.com/)
+
+URLs:
+- Base -> https://levy-spring-blog.herokuapp.com
+- Docs -> https://levy-spring-blog.herokuapp.com/swagger-ui/
+
+Simple front-end for this API coming soon.
 
 ## Features
 - [x] Authentication
@@ -9,6 +15,7 @@ Swagger documentation is available at `/swagger-ui/`
 - [x] Comments
 - [x] Categories
 - [x] Search
+- [x] Swagger Documentation
 
 ## Endpoints:
 | Endpoint                 | Method | Description                   |
