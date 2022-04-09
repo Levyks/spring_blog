@@ -1,25 +1,23 @@
 package com.levyks.spring_blog.controllers;
 
-import com.levyks.spring_blog.dtos.BasicMessageDTO;
+import com.levyks.spring_blog.dtos.misc.BasicMessageDTO;
 import com.levyks.spring_blog.dtos.comments.CommentDTO;
-import com.levyks.spring_blog.dtos.comments.CreateCommentRequestDTO;
-import com.levyks.spring_blog.dtos.posts.CreatePostRequestDTO;
+import com.levyks.spring_blog.dtos.comments.CreateOrUpdateCommentRequestDTO;
+import com.levyks.spring_blog.dtos.posts.CreateOrUpdatePostRequestDTO;
 import com.levyks.spring_blog.dtos.posts.PostDTO;
+import com.levyks.spring_blog.models.Category;
 import com.levyks.spring_blog.models.Comment;
 import com.levyks.spring_blog.models.Post;
+import com.levyks.spring_blog.repositories.CategoryRepository;
 import com.levyks.spring_blog.repositories.CommentRepository;
 import com.levyks.spring_blog.repositories.PostRepository;
 import com.levyks.spring_blog.security.details.UserDetailsImpl;
-import com.levyks.spring_blog.security.details.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,22 +30,17 @@ public class PostController {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
-    public PostController(PostRepository postRepository, CommentRepository commentRepository, UserDetailsServiceImpl userDetailsService) {
+    public PostController(PostRepository postRepository, CommentRepository commentRepository, CategoryRepository categoryRepository) {
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
-        this.userDetailsService = userDetailsService;
+        this.categoryRepository = categoryRepository;
     }
 
     @GetMapping("")
-    public Page<PostDTO> getAllPosts(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-
+    public Page<PostDTO> getPosts(Pageable pageable) {
         return postRepository.findAll(pageable).map(PostDTO::fromPost);
     }
 
@@ -55,22 +48,50 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('USER')")
     public PostDTO createPost(
-            @RequestBody @Valid CreatePostRequestDTO createPostRequestDTO,
+            @RequestBody @Valid CreateOrUpdatePostRequestDTO createPostRequestDTO,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
+        Category category = categoryRepository.findById(createPostRequestDTO.getCategoryId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+
         Post post = new Post();
         post.setTitle(createPostRequestDTO.getTitle());
         post.setContent(createPostRequestDTO.getContent());
-        post.setAuthor(userDetailsService.getUserByDetails(userDetails));
-        postRepository.save(post);
+        post.setAuthor(userDetails.getUser());
+        post.setCategory(category);
 
-        return PostDTO.fromPost(post);
+        return PostDTO.fromPost(postRepository.save(post));
     }
 
     @GetMapping("/{id}")
     public PostDTO getPostById(@PathVariable Long id) {
         return postRepository.findById(id).map(PostDTO::fromPost)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
+    public PostDTO updatePost(
+            @PathVariable Long id,
+            @RequestBody @Valid CreateOrUpdatePostRequestDTO updatePostRequestDTO,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        Category category = categoryRepository.findById(updatePostRequestDTO.getCategoryId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+
+        if(!post.isAuthor(userDetails.getUser()) && !userDetails.hasRole("ROLE_ADMIN")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to edit this post");
+        }
+
+        post.setTitle(updatePostRequestDTO.getTitle());
+        post.setContent(updatePostRequestDTO.getContent());
+        post.setCategory(category);
+        post.setEdited(true);
+
+        return PostDTO.fromPost(postRepository.save(post));
     }
 
     @DeleteMapping("/{id}")
@@ -80,9 +101,9 @@ public class PostController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "pOST not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
 
-        if(!userDetails.getEmail().equals(post.getAuthor().getEmail())) {
+        if(!post.isAuthor(userDetails.getUser()) && !userDetails.hasRole("ROLE_ADMIN")) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to delete this comment");
         }
 
@@ -95,12 +116,12 @@ public class PostController {
     @GetMapping("/{id}/comments")
     public Page<CommentDTO> getCommentsByPostId(
         @PathVariable Long id,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size
+        Pageable pageable
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
 
-        return commentRepository.findByPostId(id, pageable).map(CommentDTO::fromComment);
+        return commentRepository.findByPost(post, pageable).map(CommentDTO::fromComment);
     }
 
     @PostMapping("/{id}/comments")
@@ -108,19 +129,17 @@ public class PostController {
     @PreAuthorize("hasRole('USER')")
     public CommentDTO createComment(
             @PathVariable Long id,
-            @RequestBody @Valid CreateCommentRequestDTO createCommentRequestDTO,
+            @RequestBody @Valid CreateOrUpdateCommentRequestDTO createCommentRequestDTO,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         Post post = postRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
 
         Comment comment = new Comment();
         comment.setContent(createCommentRequestDTO.getContent());
-        comment.setAuthor(userDetailsService.getUserByDetails(userDetails));
+        comment.setAuthor(userDetails.getUser());
         comment.setPost(post);
 
-        commentRepository.save(comment);
-
-        return CommentDTO.fromComment(comment);
+        return CommentDTO.fromComment(commentRepository.save(comment));
     }
 
 

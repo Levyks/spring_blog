@@ -1,14 +1,9 @@
 package com.levyks.spring_blog.models;
 
-import com.levyks.spring_blog.dtos.comments.CommentDTO;
 import lombok.*;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -33,5 +28,9 @@ public class Comment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+    public boolean isAuthor(User user) {
+        return Objects.equals(this.author, user);
+    }
 
 }

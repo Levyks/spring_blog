@@ -1,4 +1,4 @@
-package com.levyks.spring_blog.dtos;
+package com.levyks.spring_blog.dtos.misc;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

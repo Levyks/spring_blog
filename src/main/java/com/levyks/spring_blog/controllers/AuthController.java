@@ -61,8 +61,7 @@ public class AuthController {
 
         String jwt = jwtUtils.generateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        User user = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("Something really wrong happened here lol"));
+        User user = userDetails.getUser();
 
         return new LoginResponseDTO(jwt, UserDTO.fromUser(user));
 
@@ -99,8 +98,7 @@ public class AuthController {
     @GetMapping("/whoami")
     @PreAuthorize("isAuthenticated()")
     public UserDTO whoami(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userRepository.findByEmail(userDetails.getUsername()).map(UserDTO::fromUser)
-                .orElseThrow(() -> new RuntimeException("Something really wrong happened here lol"));
+        return UserDTO.fromUser(userDetails.getUser());
 
     }
 

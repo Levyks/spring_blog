@@ -2,8 +2,8 @@ package com.levyks.spring_blog.models;
 
 import lombok.*;
 import org.hibernate.Hibernate;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -14,18 +14,19 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 @MappedSuperclass
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    @CreatedDate
+    @CreationTimestamp
+    @ToString.Exclude
     private Date createdAt = new Date();
 
     @Column(nullable = false)
-    @LastModifiedDate
+    @UpdateTimestamp
+    @ToString.Exclude
     private Date updatedAt = new Date();
 
     @Override

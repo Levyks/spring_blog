@@ -1,10 +1,10 @@
 package com.levyks.spring_blog.dtos.posts;
 
 import com.levyks.spring_blog.dtos.auth.UserBasicDTO;
+import com.levyks.spring_blog.dtos.categories.BasicCategoryDTO;
 import com.levyks.spring_blog.models.Post;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
@@ -18,6 +18,7 @@ public class PostDTO {
     private Date createdAt;
     private Date updatedAt;
     private UserBasicDTO author;
+    private BasicCategoryDTO category;
 
     public static PostDTO fromPost(Post post) {
         return new PostDTO(
@@ -27,7 +28,8 @@ public class PostDTO {
                 post.getEdited(),
                 post.getCreatedAt(),
                 post.getUpdatedAt(),
-                UserBasicDTO.fromUser(post.getAuthor())
+                UserBasicDTO.fromUser(post.getAuthor()),
+                BasicCategoryDTO.fromCategory(post.getCategory())
         );
     }
 }

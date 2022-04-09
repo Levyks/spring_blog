@@ -16,25 +16,16 @@ import java.util.stream.Collectors;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 
     @EqualsAndHashCode.Include()
-    private Long id;
-    private String email;
+    private final User user;
 
-    @JsonIgnore
-    private String password;
+    private final Collection<? extends GrantedAuthority> authorities;
 
-    private Collection<? extends GrantedAuthority> authorities;
-
-    static UserDetailsImpl buildFromUser(User user) {
-        return new UserDetailsImpl(
-                user.getId(),
-                user.getEmail(),
-                user.getPassword(),
-                mapRolesToAuthorities(user.getRoles())
-        );
+    public UserDetailsImpl(User user) {
+        this.user = user;
+        this.authorities = mapRolesToAuthorities(user.getRoles());
     }
 
     static private Collection<GrantedAuthority> mapRolesToAuthorities(Set<Role> roles) {
@@ -43,9 +34,17 @@ public class UserDetailsImpl implements UserDetails {
                 .collect(Collectors.toList());
     }
 
+    public boolean hasRole(String role) {
+        return authorities.contains(new SimpleGrantedAuthority(role));
+    }
+
     @Override
     public String getUsername() {
-        return email;
+        return user.getEmail();
+    }
+    @Override
+    public String getPassword() {
+        return user.getPassword();
     }
     @Override
     public boolean isAccountNonExpired() {
