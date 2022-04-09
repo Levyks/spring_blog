@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.validation.Valid;
 
+import com.levyks.spring_blog.dtos.auth.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,13 +24,11 @@ import org.springframework.web.bind.annotation.*;
 import com.levyks.spring_blog.security.details.UserDetailsImpl;
 import com.levyks.spring_blog.security.jwt.JwtUtils;
 
-import com.levyks.spring_blog.dtos.*;
 import com.levyks.spring_blog.models.Role;
 import com.levyks.spring_blog.models.User;
 import com.levyks.spring_blog.repositories.RoleRepository;
 import com.levyks.spring_blog.repositories.UserRepository;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -65,7 +64,7 @@ public class AuthController {
         User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Something really wrong happened here lol"));
 
-        return new LoginResponseDTO(jwt, user.toDTO());
+        return new LoginResponseDTO(jwt, UserDTO.fromUser(user));
 
     }
 
@@ -93,16 +92,16 @@ public class AuthController {
 
             userRepository.save(user);
 
-            return new RegisterResponseDTO(user.toDTO());
+            return new RegisterResponseDTO(UserDTO.fromUser(user));
 
     }
 
     @GetMapping("/whoami")
     @PreAuthorize("isAuthenticated()")
     public UserDTO whoami(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("Something really wrong happened here lol"))
-                .toDTO();
+        return userRepository.findByEmail(userDetails.getUsername()).map(UserDTO::fromUser)
+                .orElseThrow(() -> new RuntimeException("Something really wrong happened here lol"));
+
     }
 
 }

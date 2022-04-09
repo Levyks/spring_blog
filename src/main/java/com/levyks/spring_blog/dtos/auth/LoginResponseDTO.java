@@ -1,4 +1,4 @@
-package com.levyks.spring_blog.dtos;
+package com.levyks.spring_blog.dtos.auth;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

@@ -25,4 +25,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return UserDetailsImpl.buildFromUser(user);
     }
 
+    public User getUserByDetails(UserDetails userDetails) {
+        return userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
 }

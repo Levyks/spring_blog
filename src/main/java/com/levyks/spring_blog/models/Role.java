@@ -3,7 +3,6 @@ package com.levyks.spring_blog.models;
 import java.util.Objects;
 import org.hibernate.Hibernate;
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 import lombok.*;
 
@@ -13,27 +12,11 @@ import lombok.*;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class Role {
+public class Role extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @NotBlank
+    @Column(nullable = false)
     private String name;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Role role = (Role) o;
-        return id != null && Objects.equals(id, role.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }
 
 
