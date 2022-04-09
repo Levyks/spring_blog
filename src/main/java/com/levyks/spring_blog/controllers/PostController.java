@@ -40,8 +40,13 @@ public class PostController {
     }
 
     @GetMapping("")
-    public Page<PostDTO> getPosts(Pageable pageable) {
-        return postRepository.findAll(pageable).map(PostDTO::fromPost);
+    public Page<PostDTO> getPosts(
+            @RequestParam(value="q", required = false) String query,
+            Pageable pageable
+    ) {
+        return query == null ?
+                postRepository.findAll(pageable).map(PostDTO::fromPost) :
+                postRepository.findByTitleContainingIgnoreCase(query, pageable).map(PostDTO::fromPost);
     }
 
     @PostMapping("")

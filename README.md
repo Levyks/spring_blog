@@ -8,7 +8,7 @@ Swagger documentation is available at `/swagger-ui/`
 - [x] Posts
 - [x] Comments
 - [x] Categories
-- [ ] Search
+- [x] Search
 
 ## Endpoints:
 | Endpoint                 | Method | Description                   |

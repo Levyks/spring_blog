@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -30,6 +27,16 @@ public class UserController {
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
+    }
+
+    @GetMapping("")
+    public Page<UserBasicDTO> getUsers(
+            @RequestParam(value="q", required = false) String query,
+            Pageable pageable
+    ) {
+        return query == null ?
+                userRepository.findAll(pageable).map(UserBasicDTO::fromUser) :
+                userRepository.searchByName(query, pageable).map(UserBasicDTO::fromUser);
     }
 
     @GetMapping("/{id}")

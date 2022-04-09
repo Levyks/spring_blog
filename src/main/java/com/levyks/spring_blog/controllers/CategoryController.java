@@ -30,8 +30,13 @@ public class CategoryController {
     }
 
     @GetMapping("")
-    public Page<CategoryDTO> getCategories(Pageable pageable) {
-        return categoryRepository.findAll(pageable).map(CategoryDTO::fromCategory);
+    public Page<CategoryDTO> getCategories(
+            @RequestParam(value="q", required = false) String query,
+            Pageable pageable
+    ) {
+        return query == null ?
+                categoryRepository.findAll(pageable).map(CategoryDTO::fromCategory) :
+                categoryRepository.findByNameContainingIgnoreCase(query, pageable).map(CategoryDTO::fromCategory);
     }
 
     @GetMapping("/{id}")
