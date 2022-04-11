@@ -42,4 +42,7 @@ public class Post extends BaseEntity {
         return Objects.equals(this.author, user);
     }
 
+    public String getContentShort() {
+        return content.substring(0, Math.min(content.length(), 200));
+    }
 }

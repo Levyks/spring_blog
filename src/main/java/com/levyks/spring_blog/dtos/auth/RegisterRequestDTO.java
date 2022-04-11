@@ -2,12 +2,14 @@ package com.levyks.spring_blog.dtos.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-@AllArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RegisterRequestDTO {
     @NotBlank
     @Email

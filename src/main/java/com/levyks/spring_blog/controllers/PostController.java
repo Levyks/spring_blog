@@ -3,6 +3,7 @@ package com.levyks.spring_blog.controllers;
 import com.levyks.spring_blog.dtos.misc.BasicMessageDTO;
 import com.levyks.spring_blog.dtos.comments.CommentDTO;
 import com.levyks.spring_blog.dtos.comments.CreateOrUpdateCommentRequestDTO;
+import com.levyks.spring_blog.dtos.posts.BasicPostDTO;
 import com.levyks.spring_blog.dtos.posts.CreateOrUpdatePostRequestDTO;
 import com.levyks.spring_blog.dtos.posts.PostDTO;
 import com.levyks.spring_blog.models.Category;
@@ -40,13 +41,13 @@ public class PostController {
     }
 
     @GetMapping("")
-    public Page<PostDTO> getPosts(
+    public Page<BasicPostDTO> getPosts(
             @RequestParam(value="q", required = false) String query,
             Pageable pageable
     ) {
         return query == null ?
-                postRepository.findAll(pageable).map(PostDTO::fromPost) :
-                postRepository.findByTitleContainingIgnoreCase(query, pageable).map(PostDTO::fromPost);
+                postRepository.findAll(pageable).map(BasicPostDTO::fromPost) :
+                postRepository.findByTitleContainingIgnoreCase(query, pageable).map(BasicPostDTO::fromPost);
     }
 
     @PostMapping("")

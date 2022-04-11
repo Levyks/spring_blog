@@ -6,11 +6,11 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UserBasicDTO {
+public class BasicUserDTO {
     private Long id;
     private String name;
 
-    public static UserBasicDTO fromUser(User user) {
-        return new UserBasicDTO(user.getId(), user.getFirstName() + " " + user.getLastName());
+    public static BasicUserDTO fromUser(User user) {
+        return new BasicUserDTO(user.getId(), user.getFirstName() + " " + user.getLastName());
     }
 }

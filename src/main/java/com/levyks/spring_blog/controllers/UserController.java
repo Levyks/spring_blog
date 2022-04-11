@@ -1,8 +1,8 @@
 package com.levyks.spring_blog.controllers;
 
-import com.levyks.spring_blog.dtos.auth.UserBasicDTO;
+import com.levyks.spring_blog.dtos.auth.BasicUserDTO;
 import com.levyks.spring_blog.dtos.comments.CommentDTO;
-import com.levyks.spring_blog.dtos.posts.PostDTO;
+import com.levyks.spring_blog.dtos.posts.BasicPostDTO;
 import com.levyks.spring_blog.models.User;
 import com.levyks.spring_blog.repositories.CommentRepository;
 import com.levyks.spring_blog.repositories.PostRepository;
@@ -30,27 +30,27 @@ public class UserController {
     }
 
     @GetMapping("")
-    public Page<UserBasicDTO> getUsers(
+    public Page<BasicUserDTO> getUsers(
             @RequestParam(value="q", required = false) String query,
             Pageable pageable
     ) {
         return query == null ?
-                userRepository.findAll(pageable).map(UserBasicDTO::fromUser) :
-                userRepository.searchByName(query, pageable).map(UserBasicDTO::fromUser);
+                userRepository.findAll(pageable).map(BasicUserDTO::fromUser) :
+                userRepository.searchByName(query, pageable).map(BasicUserDTO::fromUser);
     }
 
     @GetMapping("/{id}")
-    public UserBasicDTO getUser(@PathVariable Long id) {
-        return userRepository.findById(id).map(UserBasicDTO::fromUser)
+    public BasicUserDTO getUser(@PathVariable Long id) {
+        return userRepository.findById(id).map(BasicUserDTO::fromUser)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
     @GetMapping("/{id}/posts")
-    public Page<PostDTO> getPostsByUser(@PathVariable Long id, Pageable pageable) {
+    public Page<BasicPostDTO> getPostsByUser(@PathVariable Long id, Pageable pageable) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        return postRepository.findByAuthor(user, pageable).map(PostDTO::fromPost);
+        return postRepository.findByAuthor(user, pageable).map(BasicPostDTO::fromPost);
     }
 
     @GetMapping("/{id}/comments")

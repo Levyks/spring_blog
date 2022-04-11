@@ -10,26 +10,22 @@ import java.util.Date;
 
 @Data
 @AllArgsConstructor
-public class PostDTO {
+public class BasicPostDTO {
     private Long id;
     private String title;
-    private String content;
-    private Boolean edited;
+    private String contentShort;
     private Date createdAt;
-    private Date updatedAt;
-    private BasicUserDTO author;
-    private BasicCategoryDTO category;
+    private String author;
+    private String category;
 
-    public static PostDTO fromPost(Post post) {
-        return new PostDTO(
+    public static BasicPostDTO fromPost(Post post) {
+        return new BasicPostDTO(
                 post.getId(),
                 post.getTitle(),
-                post.getContent(),
-                post.getEdited(),
+                post.getContentShort(),
                 post.getCreatedAt(),
-                post.getUpdatedAt(),
-                BasicUserDTO.fromUser(post.getAuthor()),
-                BasicCategoryDTO.fromCategory(post.getCategory())
+                post.getAuthor().getFullname(),
+                post.getCategory().getName()
         );
     }
 }

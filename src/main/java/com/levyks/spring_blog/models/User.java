@@ -54,4 +54,8 @@ public class User extends BaseEntity {
         return roles.stream().map(Role::getName).collect(Collectors.toSet());
     }
 
+    public String getFullname() {
+        return firstName + " " + lastName;
+    }
+
 }

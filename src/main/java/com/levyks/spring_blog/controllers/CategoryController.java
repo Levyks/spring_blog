@@ -2,7 +2,7 @@ package com.levyks.spring_blog.controllers;
 
 import com.levyks.spring_blog.dtos.categories.CategoryDTO;
 import com.levyks.spring_blog.dtos.categories.CreateOrUpdateCategoryRequestDTO;
-import com.levyks.spring_blog.dtos.posts.PostDTO;
+import com.levyks.spring_blog.dtos.posts.BasicPostDTO;
 import com.levyks.spring_blog.models.Category;
 import com.levyks.spring_blog.repositories.CategoryRepository;
 import com.levyks.spring_blog.repositories.PostRepository;
@@ -48,14 +48,14 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}/posts")
-    public Page<PostDTO> getPostsByCategory(
+    public Page<BasicPostDTO> getPostsByCategory(
             @PathVariable Long id,
             Pageable pageable
     ) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
 
-        return postRepository.findByCategory(category, pageable).map(PostDTO::fromPost);
+        return postRepository.findByCategory(category, pageable).map(BasicPostDTO::fromPost);
     }
 
     @PutMapping("/{id}")
