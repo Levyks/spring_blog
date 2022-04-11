@@ -8,7 +8,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
-@EnableWebMvc
 public class WebConfiguration implements WebMvcConfigurer
 {
     @Override
@@ -17,9 +16,5 @@ public class WebConfiguration implements WebMvcConfigurer
                 .allowedOrigins("http://localhost:8000", "https://levy-spring-blog.herokuapp.com");
     }
 
-    @Bean
-    public InternalResourceViewResolver defaultViewResolver() {
-        return new InternalResourceViewResolver();
-    }
 
 }
