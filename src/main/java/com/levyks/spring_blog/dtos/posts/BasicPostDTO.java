@@ -22,7 +22,7 @@ public class BasicPostDTO {
         return new BasicPostDTO(
                 post.getId(),
                 post.getTitle(),
-                post.getContentShort(),
+                post.getContentShort(true),
                 post.getCreatedAt(),
                 post.getAuthor().getFullname(),
                 post.getCategory().getName()
